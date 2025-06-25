@@ -38,6 +38,29 @@
     },
     "nixpkgs": {
       "locked": {
+        "lastModified": 1749285348,
+        "narHash": "sha256-frdhQvPbmDYaScPFiCnfdh3B/Vh81Uuoo0w5TkWmmjU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3e3afe5174c561dee0df6f2c2b2236990146329f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixos-generators": "nixos-generators",
+        "nixpkgs": "nixpkgs",
+        "udspkgs": "udspkgs"
+      }
+    },
+    "udspkgs": {
+      "locked": {
         "lastModified": 1749664635,
         "narHash": "sha256-sHtrFobgtHjMr+kb87tyz7f4h0MWjC7fjgHH4YBcT8A=",
         "owner": "aescalera-defenseunicorns",
@@ -50,12 +73,6 @@
         "ref": "add-uds-package",
         "repo": "nixpkgs",
         "type": "github"
-      }
-    },
-    "root": {
-      "inputs": {
-        "nixos-generators": "nixos-generators",
-        "nixpkgs": "nixpkgs"
       }
     }
   },

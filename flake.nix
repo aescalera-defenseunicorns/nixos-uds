@@ -2,7 +2,13 @@
   description = "NixOS image: single-node k3s + UDS bundle (multi-format)";
 
   inputs = {
+    # Upstream nixpkgs for core packages
     nixpkgs = {
+      url = "github:NixOS/nixpkgs/nixos-unstable";
+    };
+
+    # custom nixpkgs fork containing the uds package
+    udspkgs = {
       url = "github:aescalera-defenseunicorns/nixpkgs/add-uds-package";
     };
 
@@ -14,23 +20,24 @@
 
   outputs = {
     self,
+    udspkgs,
     nixpkgs,
     nixos-generators,
     ...
   }: let
     system = "x86_64-linux";
 
-    # Import your forked nixpkgs (which includes uds)
-    pkgs = import nixpkgs {
-      inherit system;
-    };
+    # Import upstream nixpkgs for most packages
+    basepkgs = import nixpkgs {inherit system;};
+
+    # Import uds fork
+    forkpkgs = import udspkgs {inherit system;};
 
     # Helper to generate one image in the given format
     makeImage = format:
       nixos-generators.nixosGenerate {
         inherit system;
-        # Pass pkgs and udsBundle into the module
-        specialArgs = {inherit pkgs udsBundle;};
+        specialArgs = {inherit basepkgs forkpkgs;};
 
         modules = [
           # External module expecting config, pkgs, udsBundle
