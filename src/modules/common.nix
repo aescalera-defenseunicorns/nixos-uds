@@ -1,4 +1,4 @@
-{...}: {
+{pkgs, ...}: {
   system.stateVersion = "25.11";
   users.users.root.initialHashedPassword = "$2b$05$t8dCcckWBnZil0uWd5eoROJc2dNSrcGYjU8yE9.N2/DAgJXlY0h0W"; # changeme
 
@@ -11,4 +11,15 @@
     };
   };
 
+  environment = {
+    variables = {
+      EDITOR = "nvim";
+      VISUAL = "nvim";
+      KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
+    };
+
+    systemPackages = with pkgs; [
+      neovim
+    ];
+  };
 }
