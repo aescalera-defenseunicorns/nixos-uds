@@ -18,7 +18,6 @@ uds-bundle.tar.zst: uds-bundle.yaml
 
 result: uds-bundle.tar.zst
 	nix build --impure --show-trace './src/.#nixosConfigurations.nixos-uds-singlenode.config.formats.qcow'
-	git status
 	git restore --staged uds-bundle.tar.zst
 
 vm/qcow: result
