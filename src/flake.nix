@@ -18,7 +18,7 @@
     };
   };
 
-  outputs = {
+  outputs = inputs @ {
     self,
     udspkgs,
     nixpkgs,
@@ -27,35 +27,34 @@
   }: let
     system = "x86_64-linux";
 
-    # Import upstream nixpkgs for most packages
-    basepkgs = import nixpkgs {inherit system;};
+    # Define an overlay that pulls `uds` from your fork
+    udsOverlay = final: prev: {
+      uds = (import udspkgs { inherit system; }).uds;
+    };
 
-    # Import uds fork
-    forkpkgs = import udspkgs {inherit system;};
-
-    # Helper to generate one image in the given format
-    makeImage = format:
-      nixos-generators.nixosGenerate {
-        inherit system;
-        specialArgs = {inherit basepkgs forkpkgs;};
-
-        modules = [
-          # External module expecting config, pkgs, udsBundle
+    # Import nixpkgs + our overlay
+    customPkgs = import nixpkgs {
+      inherit system;
+      overlays = [ udsOverlay ];
+    };
+    specialArgs =
+      inputs
+      // {
+        inherit system customPkgs;
+      };
+  in {
+    # a machine consuming the module
+    nixosConfigurations.udsOS-singlenode = nixpkgs.lib.nixosSystem {
+      inherit system;
+      inherit specialArgs;
+      # specialArgs = { inherit pkgs; };
+      modules = [ 
+          nixos-generators.nixosModules.all-formats
+          # ./modules/all-formats.nix
           ./modules/common.nix
           ./modules/k3s-singlenode.nix
           ./modules/uds.nix
-        ];
-
-        format = format;
-      };
-  in {
-    packages.${system} = {
-      k3s-uds-raw = makeImage "raw";
-      k3s-uds-iso = makeImage "iso";
-      k3s-uds-qcow = makeImage "qcow";
+      ];
     };
-
-    # Default to raw if you just run `nix build`
-    defaultPackage.${system} = self.packages.${system}.k3s-uds-raw;
   };
 }

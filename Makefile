@@ -14,6 +14,6 @@ src/uds-bundle.tar.zst: uds-bundle.yaml
 	ln -s $(shell realpath uds-bundle*.tar.zst) $@
 
 result: src/uds-bundle.tar.zst
-	nix build --show-trace './src/.#packages.x86_64-linux.k3s-uds-qcow'
+	nix build --show-trace './src/.#nixosConfigurations.udsOS-singlenode.config.formats.qcow'
 
 vm/qcow: result
