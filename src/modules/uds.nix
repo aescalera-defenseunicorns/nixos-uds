@@ -3,10 +3,10 @@
   customPkgs,
   ...
 }: let
-  # udsBundle = pkgs.runCommandLocal "uds-bundle.tar.zst" {} ''
-  #   cp -L ${builtins.path { path = ../../uds-bundle-demo-bundle-amd64-0.0.1.tar.zst; filter = _: true; }} $out
-  # '';
-  udsBundle = ../../../hacky-bs/uds-bundle.tar.zst;
+  udsBundle = pkgs.runCommandLocal "uds-bundle.tar.zst" {} ''
+    cp ${../../uds-bundle.tar.zst} $out
+  '';
+  # udsBundle = ../../uds-bundle.tar.zst;
 in {
   nixpkgs.pkgs = customPkgs;
   environment.systemPackages = with pkgs; [uds];

@@ -1,4 +1,5 @@
 SHELL = /usr/bin/env bash
+UDS := /nix/store/s2lryyz7hh3lshj6cpzs8hy33r9fvvzd-uds-0.27.6/bin/uds-cli
 
 .PHONY: default clean vm/qcow
 
@@ -7,12 +8,18 @@ default: vm/qcow
 uds-bundle.yaml:
 	@:
 
-src/uds-bundle.tar.zst: uds-bundle.yaml
-	rm -f uds-bundle*.tar.zst src/uds-bundle.tar.zst
-	uds create --confirm
-	ln -s $(shell realpath uds-bundle*.tar.zst) $@
+uds-bundle.tar.zst: uds-bundle.yaml
+	rm -f uds-bundle-*.tar.zst $@
+	touch $@
+	git add -f $@
+	$(UDS) create --confirm
+	mv $(shell realpath uds-bundle-*.tar.zst) $@
+	git add $@
 
-result: src/uds-bundle.tar.zst
-	nix build --show-trace './src/.#nixosConfigurations.nixos-uds-singlenode.config.formats.qcow'
+result: uds-bundle.tar.zst
+	nix build --impure --show-trace './src/.#nixosConfigurations.nixos-uds-singlenode.config.formats.qcow'
+	git status
+	git restore --staged uds-bundle.tar.zst
 
 vm/qcow: result
+	
