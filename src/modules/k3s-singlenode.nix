@@ -13,11 +13,13 @@
     7946 # metallb
     80
     443
+    10250
   ];
   networking.firewall.allowedUDPPorts = [
     # 8472 # k3s, flannel: required if using multi-node for inter-node networking
     7946 # metallb
     80
     443
+    10250
   ];
 }

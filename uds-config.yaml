@@ -1,4 +1,6 @@
 variables:
   metallb:
-    IP_ADDRESS_ADMIN_INGRESSGATEWAY: "192.168.122.26"
-    IP_ADDRESS_TENANT_INGRESSGATEWAY: "192.168.122.205"
+    # metallb will grab these VIPs by itself (provided they are in subnet and not already taken)
+    # no need to set up NICs on the nodes
+    IP_ADDRESS_ADMIN_INGRESSGATEWAY: "192.168.122.105"
+    IP_ADDRESS_TENANT_INGRESSGATEWAY: "192.168.122.106"
