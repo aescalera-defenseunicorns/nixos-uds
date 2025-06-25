@@ -11,6 +11,7 @@ over 30 differnt types of hypervisors and bare-metal hosts.
 ## Goals
 
 - [x] build single-node k3s cluster and apply UDS bundle
+- [x] uds-core deploys successfully
 - [ ] integrate with [pixiecore], [nixos-anywhere], [disko], and [nixos-facter]
       to automatically report system hardware/virtualized hardware,
       serve kernel/initrd images with correct configuration based on host mac,
