@@ -1,66 +1,86 @@
 {
-  description = "NixOS image: single-node k3s + UDS bundle (multi-format)";
-
   inputs = {
-    # Upstream nixpkgs for core packages
-    nixpkgs = {
-      url = "github:NixOS/nixpkgs/nixos-unstable";
-    };
-
-    # custom nixpkgs fork containing the uds package
-    udspkgs = {
-      url = "github:aescalera-defenseunicorns/nixpkgs/add-uds-package";
-    };
-
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    udspkgs = {
+      url = "github:aescalera-defenseunicorns/nixpkgs/add-uds-package";
+    };
   };
 
-  outputs = inputs @ {
-    self,
-    udspkgs,
-    nixpkgs,
-    nixos-generators,
-    ...
-  }: let
-    system = "x86_64-linux";
-
-    # Define an overlay that pulls `uds` from the fork
-    udsOverlay = final: prev: {
-      uds = (import udspkgs {inherit system;}).uds;
-    };
-
-    # Import nixpkgs + our overlay
-    customPkgs = import nixpkgs {
-      inherit system;
-      overlays = [udsOverlay];
-    };
-
-    specialArgs =
-      inputs
-      // {
-        inherit system customPkgs nixos-generators;
+  outputs = { nixpkgs, nixos-generators, udspkgs, ... }:
+    let
+      pkgsForSystem = system: import nixpkgs {
+        inherit system;
+        overlays = [
+          (final: prev: {
+            uds = (import udspkgs { inherit system; }).uds;
+          })
+        ];
       };
 
-  in {
-    # a machine consuming the module
-    nixosConfigurations.nixos-uds-singlenode = nixpkgs.lib.nixosSystem {
-      inherit system;
-      inherit specialArgs;
-      modules = [
-        {
-          # Pin nixpkgs to the flake input, so that the packages installed
-          # come from the flake inputs.nixpkgs.url.
-          nix.registry.nixpkgs.flake = nixpkgs;
-          virtualisation.diskSize = 30 * 1024;
-        }
-        nixos-generators.nixosModules.all-formats
-        ./modules/common.nix
-        ./modules/k3s-singlenode.nix
-        ./modules/uds.nix
+      # nixos-generators doesn't export this list or attrs, so we have to set it manually.
+      # last modified: 2025-06-24
+      formats = [
+        "amazon"
+        "azure"
+        "cloudstack"
+        "do"
+        "docker"
+        "gce"
+        "hyperv"
+        "install-iso"
+        "install-iso-hyperv"
+        "iso"
+        "kexec"
+        "kexec-bundle"
+        "kubevirt"
+        "linode"
+        "lxc"
+        "lxc-metadata"
+        "openstack"
+        "proxmox"
+        "proxmox-lxc"
+        "qcow"
+        "qcow-efi"
+        "raw"
+        "raw-efi"
+        "sd-aarch64"
+        "sd-aarch64-installer"
+        "sd-x86_64"
+        "vagrant-virtualbox"
+        "virtualbox"
+        "vm"
+        "vm-bootloader"
+        "vm-nogui"
+        "vmware"
       ];
+
+      allVMs = [ "x86_64-linux" "aarch64-linux" ];
+
+      forAllVMsFormats = f:
+        nixpkgs.lib.genAttrs allVMs (system:
+          nixpkgs.lib.genAttrs formats (format:
+            f { inherit system format; pkgs = pkgsForSystem system; }
+          )
+        );
+
+    in
+    {
+      packages = forAllVMsFormats ({ system, format, pkgs }: nixos-generators.nixosGenerate {
+        inherit system format;
+        modules = [
+          { nixpkgs.pkgs = pkgs; }
+          {
+            nix.registry.nixpkgs.flake = nixpkgs;
+            virtualisation.diskSize = 30 * 1024;
+          }
+          ./modules/common.nix
+          ./modules/k3s-singlenode.nix
+          ./modules/uds.nix
+        ];
+      });
     };
-  };
 }
