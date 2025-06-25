@@ -41,7 +41,9 @@
 
         modules = [
           # External module expecting config, pkgs, udsBundle
-          ./uds.nix
+          ./modules/common.nix
+          ./modules/k3s-singlenode.nix
+          ./modules/uds.nix
         ];
 
         format = format;
