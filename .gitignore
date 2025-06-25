@@ -1,2 +1,3 @@
 result
-uds-bundle*.tar.zst
+*.qcow2
+*.tar.zst

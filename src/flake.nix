@@ -38,24 +38,64 @@
       overlays = [udsOverlay];
     };
 
+    supportedFormats = [
+      "amazon"
+      "azure"
+      "cloudstack"
+      "do"
+      "docker"
+      "gce"
+      "hyperv"
+      "install-iso"
+      "install-iso-hyperv"
+      "iso"
+      "kexec"
+      "kexec-bundle"
+      "kubevirt"
+      "linode"
+      "lxc"
+      "lxc-metadata"
+      "openstack"
+      "proxmox"
+      "proxmox-lxc"
+      "qcow"
+      "qcow-efi"
+      "raw"
+      "raw-efi"
+      "sd-aarch64"
+      "sd-aarch64-installer"
+      "sd-x86_64"
+      "vagrant-virtualbox"
+      "virtualbox"
+      "vm"
+      "vm-bootloader"
+      "vm-nogui"
+      "vmware"
+    ];
+
     specialArgs =
       inputs
       // {
-        inherit system customPkgs;
+        inherit system customPkgs nixos-generators;
       };
+
+    # formatNames = builtins.attrNames nixos-generators.formats;
   in {
     # a machine consuming the module
     nixosConfigurations.nixos-uds-singlenode = nixpkgs.lib.nixosSystem {
       inherit system;
       inherit specialArgs;
       modules = [
-            {
-              # Pin nixpkgs to the flake input, so that the packages installed
-              # come from the flake inputs.nixpkgs.url.
-              nix.registry.nixpkgs.flake = nixpkgs;
-              # set disk size to to 20G
-              virtualisation.diskSize = 20 * 1024;
-            }
+        # ({ lib, config, ... }: {
+        #   config.formatConfigs =
+        #     lib.genAttrs supportedFormats (_: { size = "16G"; });
+        # })
+        {
+          # Pin nixpkgs to the flake input, so that the packages installed
+          # come from the flake inputs.nixpkgs.url.
+          nix.registry.nixpkgs.flake = nixpkgs;
+          virtualisation.diskSize = 20 * 1024;
+        }
         nixos-generators.nixosModules.all-formats
         ./modules/common.nix
         ./modules/k3s-singlenode.nix

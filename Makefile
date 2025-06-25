@@ -8,17 +8,14 @@ default: vm/qcow
 uds-bundle.yaml:
 	@:
 
-uds-bundle.tar.zst: uds-bundle.yaml
-	rm -f uds-bundle-*.tar.zst $@
-	touch $@
-	git add -f $@
-	$(UDS) create --confirm
-	mv $(shell realpath uds-bundle-*.tar.zst) $@
-	git add $@
+/tmp/uds-bundle-nixos/uds-bundle-nixos-amd64-0.0.1.tar.zst: uds-bundle.yaml
+	$(UDS) create --confirm --name nixos --architecture amd64
+	mkdir -p $(shell dirname $@)
+	mv $(shell realpath uds-bundle-nixos*.tar.zst) $@
+	$(UDS) inspect $@
 
-result: uds-bundle.tar.zst
-	nix build --impure --show-trace './src/.#nixosConfigurations.nixos-uds-singlenode.config.formats.qcow'
-	git restore --staged uds-bundle.tar.zst
+result: /tmp/uds-bundle-nixos/uds-bundle-nixos-amd64-0.0.1.tar.zst
+	nix build --impure --show-trace './src/.#nixosConfigurations.nixos-uds-singlenode.config.formats.qcow-efi'
 
 vm/qcow: result
 	
