@@ -21,6 +21,9 @@ over 30 differnt types of hypervisors and bare-metal hosts.
       remote attestation workloads
 - [ ] enable automated bootstrapping/joining of nodes to clusters
       WITH GitOps/PR-based approval workflow
+- [ ] bots to enable automated reporting/linking of remote attestation,
+      hardware reports, etc to PRs
+- [ ] Policy/risk engine + AI to (try to help) automate analysis of GitOps PRs.
 
 ### Moonshots
 

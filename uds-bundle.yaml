@@ -4,21 +4,16 @@ metadata:
   description: Bundle with Zarf init and UDS Core.
   version: 0.0.1
 
-variables:
-  metallb:
-    IP_ADDRESS_ADMIN_INGRESSGATEWAY: "192.168.122.26"
-    IP_ADDRESS_TENANT_INGRESSGATEWAY: "192.168.122.205"
-
 packages:
   - name: init
-    # repository: oci://ghcr.io/zarf-dev/packages/init
-    path: ./
+    repository: ghcr.io/zarf-dev/packages/init
     ref: v0.55.6
+    path: ./
 
   - name: metallb
-    # repository: oci://ghcr.io/uds-packages/metallb
+    repository: ghcr.io/uds-packages/uds/metallb
+    ref: 0.14.9-uds.0-upstream
     path: ./
-    ref: 0.15.2 # -uds.0-upstream
     overrides:
       metallb:
         metallb:
@@ -31,10 +26,9 @@ packages:
               default: ${ZARF_VAR_IP_ADDRESS_TENANT_INGRESSGATEWAY}
 
   - name: core
-    # repository: oci://ghcr.io/defenseunicorns/packages/uds/core
+    repository: oci://ghcr.io/defenseunicorns/packages/uds/core
+    ref: 0.44.0-upstream
     path: ./
-    ref: 0.44.0 # -upstream
-    # Set overrides for Keycloak SSO tutorial
     overrides:
       keycloak:
         keycloak:
