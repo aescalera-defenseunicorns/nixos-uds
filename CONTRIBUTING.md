@@ -21,5 +21,43 @@ tree .
 
 ## Building
 
-use `make`.
+Contributors are expected to use the `make` build system automation in this repo.
 The only requirements are an `amd64-linux`-based system, `nix`, and `uds`.
+This will soon change to only require an OCI-compliant container runtime.
+
+## Contracts
+
+Assumptions and expected use cases that other developers can rely upon to be
+provided by the code in this repo.
+
+### Data
+
+This repo will reliably consume or produce...
+
+#### Inputs
+
+- uds-bundle.yaml
+- uds-config.yaml (optional)
+
+#### Outputs
+
+(non-exhaustive)
+
+##### Images
+
+any of the nixos-generators supported image formats
+
+##### Environments
+
+- local dev env
+- CI dev env
+
+### Functions
+
+### CI
+
+- build
+
+### Local Dev
+
+- build
