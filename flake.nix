@@ -25,13 +25,6 @@
       inherit system;
     };
 
-    # Build the UDS bundle tarball
-    udsBundle = pkgs.runCommandLocal "uds-bundle" {} ''
-      mkdir -p $out
-      cp ${./uds-bundle.yaml} $out/uds-bundle.yaml
-      ${pkgs.uds}/bin/uds create $out/uds-bundle.yaml --confirm --output $out/uds-bundle.tar.zst
-    '';
-
     # Helper to generate one image in the given format
     makeImage = format:
       nixos-generators.nixosGenerate {
