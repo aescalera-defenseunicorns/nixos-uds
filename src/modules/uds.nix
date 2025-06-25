@@ -3,9 +3,8 @@
   customPkgs,
   ...
 }: let
-  # udsBundle = pkgs.runCommandLocal "uds-bundle.tar.zst" {} ''
-  #   cp ${/tmp/uds-bundle-nixos-amd64-0.0.1.tar.zst} $out
-  # '';
+
+  # some hacky nonsense because we have to keep the uds-config.yaml and the uds-bundle-*.tar.zst outside of the git tree OR ELSE
   udsBundleDir = /tmp/uds-bundle-nixos;
 in {
   nixpkgs.pkgs = customPkgs;
@@ -16,7 +15,10 @@ in {
     wantedBy = ["multi-user.target"];
     environment = {
       KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
+      UDS_CONFIG = "${udsBundleDir}/uds-config.yaml";
     };
-    serviceConfig.ExecStart = "${pkgs.uds}/bin/uds-cli deploy ${udsBundleDir}/uds-bundle-nixos-amd64-0.0.1.tar.zst --confirm";
+    script = ''
+      ${pkgs.bash}/bin/bash -l -c 'uds-cli deploy ${udsBundleDir}/uds-bundle-demo-bundle-amd64-0.0.1.tar.zst --confirm'
+    '';
   };
 }

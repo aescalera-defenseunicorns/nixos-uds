@@ -20,6 +20,11 @@
 
     systemPackages = with pkgs; [
       neovim
+      tmux
+
+      kubectx
+      helm
+      zarf
     ];
   };
 }

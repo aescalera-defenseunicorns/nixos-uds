@@ -5,22 +5,21 @@
 ```bash
 tree .
 .
+├── CONTRIBUTING.md # this guide!
 ├── Makefile # local build automation
+├── README.md # general need-to-knows
 ├── src
-│   ├── flake.lock
-│   ├── flake.nix
-│   ├── modules # re-usable modules which can be imported by machines
-│   │   ├── common.nix # all nodes get this
-│   │   ├── k3s-singlenode.nix # deploys a single-node k3s cluster
-│   │   └── uds.nix # deploys the UDS bundle with a systemctl unit
-│   └── uds-bundle.tar.zst -> ../uds-bundle-demo-bundle-amd64-0.0.1.tar.zst
-├── uds-bundle-demo-bundle-amd64-0.0.1.tar.zst # UDS bundle tarball
-└── uds-bundle.yaml # UDS bundle manifest
+│   ├── flake.lock # state tracking of the flake inputs and other stuff
+│   ├── flake.nix # top-level config
+│   └── modules # re-usable modules which can be imported by machines
+│       ├── common.nix # all nodes get this
+│       ├── k3s-singlenode.nix # deploys a single-node k3s cluster
+│       └── uds.nix # deploys the UDS bundle with a systemctl unit
+├── uds-bundle.yaml # UDS bundle manifest
+└── uds-config.yaml # UDS config
 ```
 
 ## Building
 
-### First-time builds
-
-Use `make -B` for first-time builds.
-Subsequent builds may use `make`.
+use `make`.
+The only requirements are an `amd64-linux`-based system, `nix`, and `uds`.

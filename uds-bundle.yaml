@@ -8,12 +8,10 @@ packages:
   - name: init
     repository: ghcr.io/zarf-dev/packages/init
     ref: v0.55.6
-    path: ./
 
   - name: metallb
     repository: ghcr.io/uds-packages/uds/metallb
     ref: 0.14.9-uds.0-upstream
-    path: ./
     overrides:
       metallb:
         metallb:
@@ -26,9 +24,8 @@ packages:
               default: ${ZARF_VAR_IP_ADDRESS_TENANT_INGRESSGATEWAY}
 
   - name: core
-    repository: oci://ghcr.io/defenseunicorns/packages/uds/core
+    repository: ghcr.io/defenseunicorns/packages/uds/core
     ref: 0.44.0-upstream
-    path: ./
     overrides:
       keycloak:
         keycloak:
