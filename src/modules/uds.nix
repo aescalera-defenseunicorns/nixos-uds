@@ -1,9 +1,11 @@
 {
   pkgs,
+  customPkgs,
   ...
-} : let
+}: let
   udsBundle = ../uds-bundle.tar.zst;
 in {
+  nixpkgs.pkgs = customPkgs;
   environment.systemPackages = with pkgs; [uds];
   systemd.services.uds-deploy = {
     description = "Deploy UDS bundle into k3s";

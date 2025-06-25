@@ -29,13 +29,13 @@
 
     # Define an overlay that pulls `uds` from your fork
     udsOverlay = final: prev: {
-      uds = (import udspkgs { inherit system; }).uds;
+      uds = (import udspkgs {inherit system;}).uds;
     };
 
     # Import nixpkgs + our overlay
     customPkgs = import nixpkgs {
       inherit system;
-      overlays = [ udsOverlay ];
+      overlays = [udsOverlay];
     };
     specialArgs =
       inputs
@@ -44,16 +44,14 @@
       };
   in {
     # a machine consuming the module
-    nixosConfigurations.udsOS-singlenode = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.nixos-uds-singlenode = nixpkgs.lib.nixosSystem {
       inherit system;
       inherit specialArgs;
-      # specialArgs = { inherit pkgs; };
-      modules = [ 
-          nixos-generators.nixosModules.all-formats
-          # ./modules/all-formats.nix
-          ./modules/common.nix
-          ./modules/k3s-singlenode.nix
-          ./modules/uds.nix
+      modules = [
+        nixos-generators.nixosModules.all-formats
+        ./modules/common.nix
+        ./modules/k3s-singlenode.nix
+        ./modules/uds.nix
       ];
     };
   };
