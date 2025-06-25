@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}: let
+{pkgs, ...}: let
   # some hacky nonsense because we have to keep the uds-config.yaml and the uds-bundle-*.tar.zst outside of the git tree OR ELSE
   udsBundleDir = /tmp/uds-bundle-nixos;
 in {
