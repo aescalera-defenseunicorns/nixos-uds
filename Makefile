@@ -1,6 +1,9 @@
 SHELL = /usr/bin/env bash
 
-UDS := $(shell { command -v uds && echo "uds" ; } || { ls -t /nix/store/*-uds-*/bin/uds-cli | head -n1; } )
+PODMAN := $(shell command -v podman || command -v docker || { echo "no container runtime found" ; exit 1 ; } )
+UDS := $(shell command -v uds || { ls -t /nix/store/*-uds-*/bin/uds-cli | head -n1; } )
+# TODO: optimize this. caching derivations/builds, flake inputs, etc.
+NIX := $(shell command -v nix || echo "$(PODMAN) run -it --entrypoint nix -v \"${PWD}:/code\" -v \"/tmp:/tmp\" --device=/dev/kvm -w /code docker.io/nixos/nix --extra-experimental-features nix-command --extra-experimental-features flakes" )
 
 SRC = ./src
 
@@ -24,7 +27,6 @@ uds-config.yaml:
 $(TMPD)/uds-bundle-demo-bundle-amd64-0.0.1.tar.zst: uds-bundle.yaml
 	mkdir -p $(@D)
 	$(UDS) create --confirm --output $(TMPD)
-	# mv ./uds-bundle-demo-bundle-amd64-0.0.1.tar.zst $@
 	$(UDS) inspect $@
 
 $(TMPD)/uds-config.yaml: uds-config.yaml
@@ -32,13 +34,13 @@ $(TMPD)/uds-config.yaml: uds-config.yaml
 	cp ./uds-config.yaml $@
 
 amd64/%: $(TMPD)/uds-config.yaml $(TMPD)/uds-bundle-demo-bundle-amd64-0.0.1.tar.zst
-	nix build --impure --show-trace '$(SRC)/.#packages.x86_64-linux.$(@F)' --out-link $(RESULT)/$@
+	$(NIX) build --impure --show-trace '$(SRC)/.#packages.x86_64-linux.$(@F)' --out-link $(RESULT)/$@
 
 arm64/%: $(TMPD)/uds-config.yaml $(TMPD)/uds-bundle-demo-bundle-arm64-0.0.1.tar.zst
-	nix build --impure --show-trace '$(SRC)/.#packages.aarch64-linux.$(@F)' --out-link $(RESULT)/$@
+	$(NIX) build --impure --show-trace '$(SRC)/.#packages.aarch64-linux.$(@F)' --out-link $(RESULT)/$@
 
 show:
-	nix flake show "$(SRC)" --all-systems
+	$(NIX) flake show "$(SRC)" --all-systems
 
 clean:
 	rm -rf $(TMPD)
